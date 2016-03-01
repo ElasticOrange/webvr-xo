@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Hello, World! • A-Frame</title>
+        <meta name="description" content="Hello, World! • A-Frame">
+        <script src="/js/aframe.js"></script>
+        <script src="/node_modules/nunjucks/browser/nunjucks.js"></script>
+    </head>
+    <body>
+        <script id="x-mark-template" type="text/x-nunjucks-template">
+            <a-entity class="x-mark piece" position="{{ position }}">
+                <a-image src="/images/x.png" width="1" height="1"></a-image>
+            </a-entity>
+        </script>
+
+        <script id="o-mark-template" type="text/x-nunjucks-template">
+            <a-entity class="o-mark piece" position="{{ position }}">
+                <a-image src="/images/o.png" width="1" height="1"></a-image>
+            </a-entity>
+        </script>
+
+        <a-scene>
+            <a-sky color="rgb(121, 184, 212)"></a-sky>
+            <a-entity id="board">
+                <a-plane rotation="0 0 0" position="0 2 0" width="3" height="3" color="rgb(191, 190, 104)"></a-plane>
+            </a-entity>
+
+            <a-plane rotation="0 0 0" position="0 2 0.1" width="1" height="1" color="rgb(255, 56, 56)" id="placeholder1"></a-plane>
+
+            <a-entity id="camera" position="0 2 5">
+                <a-entity camera gamepad-controls look-controls wasd-controls>
+                    <a-entity cursor="fuse: true; timeout: 100; maxDistance: 10;" geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03" material="color: red" position="0 0 -2"></a-entity>
+                </a-entity>
+            </a-entity>
+        </a-scene>
+
+        <script src="/js/game.js"></script>
+    </body>
+</html>

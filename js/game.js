@@ -1,9 +1,18 @@
 var scene = document.querySelector('a-scene');
 var pieceContainer = document.querySelector('#pieces');
+
 var xMarkTemplateString = document.querySelector('#x-mark-template').innerHTML;
 var xMarkTemplate = nunjucks.compile(xMarkTemplateString);
+
 var oMarkTemplateString = document.querySelector('#o-mark-template').innerHTML;
 var oMarkTemplate = nunjucks.compile(oMarkTemplateString);
+
+var winnerOneTemplateString = document.querySelector('#winner1').innerHTML;
+var winnerTwoTemplateString = document.querySelector('#winner2').innerHTML;
+var winnerTemplate = {
+    1: nunjucks.compile(winnerOneTemplateString),
+    2: nunjucks.compile(winnerTwoTemplateString)
+};
 
 var pieceHoverTimer;
 var pieceHoverTimeout = 3000;
@@ -58,7 +67,6 @@ var bindPlaceholderSelect = function(domElement, callback) {
     );
 }
 
-
 var placePiece = function(element) {
     var position = element.getAttribute('piecePosition');
     if (checkICanPlacePiece(position)) {
@@ -69,11 +77,18 @@ var placePiece = function(element) {
         if (winner) {
             console.log('Winner ' + winner);
             gameOver = true;
+
+            drawWinner(winner);
         }
 
         currentPlayer = currentPlayer == 1 ? 2 : 1;
     }
 }
+
+var drawWinner = function (winner) {
+    var winnerRendered = winnerTemplate[winner].render();
+    scene.insertAdjacentHTML('beforeend', winnerRendered);
+};
 
 var checkICanPlacePiece = function(position) {
     if (gameOver) {
@@ -112,6 +127,7 @@ var markPieceInBoard = function (position) {
 
 var findWinner = function() {
     var winner = false;
+    debugger;
 
     // Horizontal
     if ((board[0][0] == board[0][1]) && (board[0][1] == board[0][2]) && (board[0][0] != 0)) {
@@ -144,7 +160,7 @@ var findWinner = function() {
         winner = board[0][0];
     }
 
-    if ((board[0][2] == board[1][1]) && (board[1][1] == board[0][2]) && (board[0][2] != 0)) {
+    if ((board[0][2] == board[1][1]) && (board[1][1] == board[2][0]) && (board[0][2] != 0)) {
         winner = board[0][2];
     }
 

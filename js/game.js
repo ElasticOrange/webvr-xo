@@ -51,19 +51,36 @@ var bindPlaceholderSelect = function(domElement, callback) {
     domElement.addEventListener(
         'mouseenter',
         function() {
+            console.log('Mouse enter');
+
+            if (pieceHoverTimer) {
+                clearTimeout(pieceHoverTimer);
+            }
             pieceHoverTimer = setTimeout(
                 function() {
                     callback(domElement);
                 },
                 pieceHoverTimeout
             );
+
+            if (currentPlayer == player) {
+                domElement.setAttribute('opacity', '0.5');
+            }
         }
     );
 
     domElement.addEventListener(
         'mouseleave',
         function() {
+            console.log('Mouse out');
+            console.log('Clearing timeout');
+            console.log(pieceHoverTimer);
+
             clearTimeout(pieceHoverTimer);
+
+            if (currentPlayer == player) {
+                domElement.setAttribute('opacity', 1);
+            }
         }
     );
 }
@@ -79,7 +96,7 @@ var placePiece = function(position, stopEmit) {
             console.log('Emitting player move');
             sendPieceMoved(position);
             currentPlayer = 3 - currentPlayer;
-        } 
+        }
 
         var winner = findWinner(board);
         if (winner) {

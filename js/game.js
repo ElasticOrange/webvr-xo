@@ -44,34 +44,59 @@ var boardPieceCoordinates = {
     9: [1, 1]
 };
 var currentPlayer = 1;
+var player = 0;
 var gameOver = false;
 
 var bindPlaceholderSelect = function(domElement, callback) {
     domElement.addEventListener(
         'mouseenter',
         function() {
+            console.log('Mouse enter');
+
+            if (pieceHoverTimer) {
+                clearTimeout(pieceHoverTimer);
+            }
             pieceHoverTimer = setTimeout(
                 function() {
                     callback(domElement);
                 },
                 pieceHoverTimeout
             );
+
+            if (currentPlayer == player) {
+                domElement.setAttribute('opacity', '0.5');
+            }
         }
     );
 
     domElement.addEventListener(
         'mouseleave',
         function() {
+            console.log('Mouse out');
+            console.log('Clearing timeout');
+            console.log(pieceHoverTimer);
+
             clearTimeout(pieceHoverTimer);
+
+            if (currentPlayer == player) {
+                domElement.setAttribute('opacity', 1);
+            }
         }
     );
 }
 
-var placePiece = function(element) {
-    var position = element.getAttribute('piecePosition');
-    if (checkICanPlacePiece(position)) {
+var placePiece = function(position, stopEmit) {
+    if (checkICanPlacePiece(position, stopEmit)) {
         drawPiece(position);
         markPieceInBoard(position);
+
+        console.log('stopEmit = ' + stopEmit);
+
+        if (stopEmit != true) {
+            console.log('Emitting player move');
+            sendPieceMoved(position);
+            currentPlayer = 3 - currentPlayer;
+        }
 
         var winner = findWinner(board);
         if (winner) {
@@ -81,7 +106,6 @@ var placePiece = function(element) {
             drawWinner(winner);
         }
 
-        currentPlayer = currentPlayer == 1 ? 2 : 1;
     }
 }
 
@@ -90,9 +114,16 @@ var drawWinner = function (winner) {
     scene.insertAdjacentHTML('beforeend', winnerRendered);
 };
 
-var checkICanPlacePiece = function(position) {
+var checkICanPlacePiece = function(position, stopEmit) {
     if (gameOver) {
         return false;
+    }
+
+    if (stopEmit != true) {
+        if ((player != currentPlayer)) {
+            console.log('I am the currentPlayer');
+            return false;
+        }
     }
 
     console.log('Coordinates');
@@ -106,6 +137,8 @@ var checkICanPlacePiece = function(position) {
 }
 
 var drawPiece = function(position) {
+    console.log('Drawing piece for player ' + currentPlayer);
+
     if (currentPlayer == 1) {
         pieceTemplate = xMarkTemplate;
     } else {
@@ -127,7 +160,6 @@ var markPieceInBoard = function (position) {
 
 var findWinner = function() {
     var winner = false;
-    debugger;
 
     // Horizontal
     if ((board[0][0] == board[0][1]) && (board[0][1] == board[0][2]) && (board[0][0] != 0)) {
@@ -172,7 +204,7 @@ for (var i = 1; i <= 9; i++) {
     bindPlaceholderSelect(
         document.querySelector('#placeholder' + i),
         function(element) {
-            placePiece(element);
+            placePiece(element.getAttribute('piecePosition'));
         }
     );
 }

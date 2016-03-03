@@ -15,7 +15,7 @@ var winnerTemplate = {
 };
 
 var pieceHoverTimer;
-var pieceHoverTimeout = 3000;
+var pieceHoverTimeout = 2000;
 var board = [
     [0, 0, 0],
     [0, 0, 0],
